@@ -7,6 +7,7 @@ const vodRouter = require("./router/vodRoutes");
 const authController = require("./controllers/authController");
 const app = express();
 app.use(morgan("dev"));
+app.set("trust proxy", true);
 app.use(express.json());
 app.use(
   cors({
