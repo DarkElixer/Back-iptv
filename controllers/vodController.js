@@ -45,7 +45,6 @@ exports.getCategoriesItem = async (req, res, next) => {
   const { token } = req.body;
   const { id } = req.params;
   const { page = 1, movieId } = req.query;
-  console.log(token);
   if (movieId) return next();
   try {
     const request = `http://${portal}/stalker_portal/server/load.php?type=vod&action=get_ordered_list&category=${id}&sortby=added&genre=*&p=${page}&sortby=added&JsHttpRequest=1-xml`;
@@ -57,6 +56,8 @@ exports.getCategoriesItem = async (req, res, next) => {
     });
     if (response.data === "Authorization failed.")
       throw new Error("Authorization failed.");
+    console.log(response.data.js);
+
     res.status(200).json({ status: "success", data: response.data.js });
   } catch (err) {
     res.status(401).json({ status: "fail", message: err.message });
@@ -64,8 +65,13 @@ exports.getCategoriesItem = async (req, res, next) => {
 };
 
 exports.getCategoriesItemSeasonsAndEpisodeLink = async (req, res, next) => {
-  const { token } = req.body;
-  const { movieId, seasonId, episodeId, page } = req.query;
+  const { token, total_items } = req.body;
+  const pages = Math.ceil(total_items / 14);
+  let { movieId, seasonId, episodeId, page, sort } = req.query;
+  console.log(sort, pages);
+  if (sort === "name-asc") {
+    page = pages - page + 1;
+  }
   try {
     const request = `http://${portal}/stalker_portal/server/load.php?type=vod&action=get_ordered_list&movie_id=${movieId}&season_id=${seasonId}&episode_id=${episodeId}&genre=*&p=${page}&JsHttpRequest=1-xml`;
     const response = await axios(request, {
@@ -113,6 +119,7 @@ exports.getVodBySearch = async (req, res, next) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    // console.log(response.data);
     if (response.data === "Authorization failed.")
       throw new Error("Authorization failed.");
     res.status(200).json({ status: "success", data: response.data.js });

@@ -14,7 +14,6 @@ exports.getLiveStream = async (req, res, next) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(req.ip);
     const link = response.data?.js?.cmd;
     if (response.data === "Authorization failed.")
       throw new Error("Authorization failed.");
@@ -35,7 +34,6 @@ exports.getCategories = async (req, res, next) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(req._remoteAddress);
     if (response.data === "Authorization failed.")
       throw new Error("Authorization failed.");
     res.status(200).json({ status: "success", data: response.data.js });
